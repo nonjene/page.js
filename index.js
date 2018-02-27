@@ -7,6 +7,8 @@
    */
 
   var pathtoRegexp = require('path-to-regexp');
+  var $ = window.jQuery;
+  if(!$) throw new Error('need jQuery');
 
   /**
    * Module exports.
@@ -195,13 +197,13 @@
     pageWindow = options.window || (hasWindow && window);
     if (false === options.dispatch) dispatch = false;
     if (false === options.decodeURLComponents) decodeURLComponents = false;
-    if (false !== options.popstate && hasWindow) pageWindow.addEventListener('popstate', onpopstate, false);
+    if (false !== options.popstate && hasWindow) $(pageWindow).on('popstate', onpopstate, false);
     if (false !== options.click && hasDocument) {
-      pageWindow.document.addEventListener(clickEvent, onclick, false);
+      $(pageWindow.document).on(clickEvent, onclick, false);
     }
     hashbang = !!options.hashbang;
     if(hashbang && hasWindow && !hasHistory) {
-      pageWindow.addEventListener('hashchange', onpopstate, false);
+      $(pageWindow).on('hashchange', onpopstate, false);
     }
     if (!dispatch) return;
 
@@ -232,9 +234,9 @@
     page.current = '';
     page.len = 0;
     running = false;
-    hasDocument && pageWindow.document.removeEventListener(clickEvent, onclick, false);
-    hasWindow && pageWindow.removeEventListener('popstate', onpopstate, false);
-    hasWindow && pageWindow.removeEventListener('hashchange', onpopstate, false);
+    hasDocument && $(pageWindow.document).off(clickEvent, onclick, false);
+    hasWindow && $(pageWindow).off('popstate', onpopstate, false);
+    hasWindow && $(pageWindow).off('hashchange', onpopstate, false);
   };
 
   /**
@@ -582,7 +584,7 @@
     if (hasDocument && document.readyState === 'complete') {
       loaded = true;
     } else {
-      window.addEventListener('load', function() {
+      $(window).on('load', function() {
         setTimeout(function() {
           loaded = true;
         }, 0);
